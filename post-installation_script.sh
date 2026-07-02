@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-packages=("nvim" "alacritty" "fish" "discord" "steam" "curl" "git" "firefox")
+packages=("nvim" "alacritty" "fish" "steam" "curl" "git" "firefox" "dolphin" "htop" "fastfetch")
 
 
 if [ -f /etc/os-release ]; then
@@ -16,22 +16,33 @@ echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com
 
 sudo dnf install -y code
 
+flatpak remote-add --if-not-exists flathub https://flathub.org
+flatpak install flathub dev.vencord.Vesktop
+
+
             ;;
         arch)
+            sudo pacman -S --needed git base-devel
+            git clone https://archlinux.org/yay.git
+            cd yay
+            makepkg -si
+            yay -S vesktop-bin
             sudo pacman -Syu --noconfirm "${packages[@]}"
-            sudo pacman -S --noconfirm code
+            sudo pacman -S --noconfirm code sddm 
             ;;
     esac
 else
-    echo "Can't recognize your distribution"
+    echo "Can't recognize distribution"
     exit 1
 fi
 
 
 mkdir -p "$HOME/.config/alacritty"
 
-
-curl -fsSL https://install.danklinux.com | sh
+read -p "Install DankLinux with niri or hyprland? (y/n): " install_danklinux
+if [[ "$install_danklinux" =~ ^[Yy]$ ]]; then
+    curl -fsSL https://install.danklinux.com | sh
+fi
 
 if ! grep -q 'program = "/usr/bin/fish"' "$HOME/.config/alacritty/alacritty.toml"; then
     echo -e "\n[terminal.shell]" >> "$HOME/.config/alacritty/alacritty.toml"
